@@ -10,7 +10,7 @@
         {# the argument of csrf_token() is the ID of this token #}
         <input type="hidden" name="token" value="{{ csrf_token('delete-item') }}">
 
-        <button type="submit">Delete item</button>
+        <button type="submit" class="btn btn-danger">Delete item</button>
     </form>
 
     {% include 'user/_form.html.twig' %}

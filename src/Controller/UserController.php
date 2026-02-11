@@ -33,14 +33,7 @@ final class UserController extends AbstractController
     {
         $user = new User();
 
-        $form = $this->createFormBuilder($user)
-            ->add('username', TextType::class)
-            ->add('email', EmailType::class)
-            ->add('password', PasswordType::class)
-            ->add('submit', SubmitType::class, [
-                'label' => 'Enregistrer'
-            ])
-            ->getForm();
+        $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 
@@ -52,7 +45,7 @@ final class UserController extends AbstractController
         }
 
         return $this->render('user/new.html.twig', [
-            'form' => $form->createView()
+            'form' => $form,
         ]);
     }
 
@@ -67,13 +60,8 @@ final class UserController extends AbstractController
     #[Route('/user/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(User $user, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createFormBuilder($user)
-            ->add('username', TextType::class)
-            ->add('email', EmailType::class)
-            ->add('submit', SubmitType::class, [
-                'label' => 'Enregistrer'
-            ])
-            ->getForm();
+        $form = $this->createForm(UserType::class, $user);
+        $form->remove('password');
 
         $form->handleRequest($request);
 
