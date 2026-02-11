@@ -1,5 +1,10 @@
 twig:
+    default_path: '%kernel.project_dir%/templates'
+    paths:
+        '%kernel.project_dir%/templates': mon_app
     file_name_pattern: '*.twig'
+    form_themes:
+        - '@mon_app/form/boostrap-layout.html.twig'
 
 when@test:
     twig:
