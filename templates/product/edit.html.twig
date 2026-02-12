@@ -9,5 +9,9 @@
 
     <a href="{{ path('app_product_index') }}">back to list</a>
 
+    <img src="{{ asset('uploads/pictures/' ~ product.pictureFilename) }}" alt="{{ product.title }}" width="300" loading="lazy">
+
     {{ include('product/_delete_form.html.twig') }}
 {% endblock %}
+
+

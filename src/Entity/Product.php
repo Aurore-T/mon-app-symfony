@@ -36,6 +36,9 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     private ?Category $category = null;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $pictureFilename = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -50,6 +53,14 @@ class Product
     {
         $this->title = $title;
 
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function slugify(): static
+    {
+        $this->slug = strtolower(trim(preg_replace('~[^0-9a-z]+~i', '-', html_entity_decode(preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($this->title, ENT_QUOTES, 'UTF-8')), ENT_QUOTES, 'UTF-8')), '-'));
         return $this;
     }
 
@@ -131,6 +142,18 @@ class Product
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getPictureFilename(): ?string
+    {
+        return $this->pictureFilename;
+    }
+
+    public function setPictureFilename(?string $pictureFilename): static
+    {
+        $this->pictureFilename = $pictureFilename;
 
         return $this;
     }

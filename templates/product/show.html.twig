@@ -11,6 +11,12 @@
                 <th>Id</th>
                 <td>{{ product.id }}</td>
             </tr>
+            {% if product.pictureFilename %}
+                <tr>
+                    <th>Image</th>
+                    <td><img src="{{ asset('uploads/pictures/' ~ product.pictureFilename) }}" alt="{{ product.title }}" width="250" loading="lazy"></td>
+                </tr>
+            {% endif %}
             <tr>
                 <th>Title</th>
                 <td>{{ product.title }}</td>
@@ -33,7 +39,7 @@
             </tr>
             <tr>
                 <th>UpdateAt</th>
-                <td>{{ product.updateAt ? product.updateAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ product.updatedAt ? product.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
         </tbody>
     </table>

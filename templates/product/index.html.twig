@@ -13,6 +13,7 @@
                 <th>Slug</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Category</th>
                 <th>CreatedAt</th>
                 <th>UpdateAt</th>
                 <th>actions</th>
@@ -22,12 +23,20 @@
         {% for product in products %}
             <tr>
                 <td>{{ product.id }}</td>
+                <td>
+                    {% if product.pictureFilename %}
+                        <img src="{{ asset('uploads/pictures/' ~ product.pictureFilename) }}" alt="{{ product.title }}" width="100" loading="lazy">
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
                 <td>{{ product.title }}</td>
                 <td>{{ product.slug }}</td>
                 <td>{{ product.description }}</td>
                 <td>{{ product.price }}</td>
+                <td>{{ product.category.title }}</td>
                 <td>{{ product.createdAt ? product.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ product.updateAt ? product.updateAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ product.updatedAt ? product.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('app_product_show', {'id': product.id}) }}">show</a>
                     <a href="{{ path('app_product_edit', {'id': product.id}) }}">edit</a>
