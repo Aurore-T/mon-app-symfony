@@ -4,4 +4,14 @@
 
 {% block body %}
     <h1>Vous êtes sur la page Home</h1>
+
+    <section>
+        <h2>Les derniers produits</h2>
+
+        <div class="d-flex gap-5">
+            {% for product in products %}
+            {{ include('partials/_card.html.twig', {'product': product}) }}
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}
