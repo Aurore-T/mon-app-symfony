@@ -20,13 +20,22 @@ class UserType extends AbstractType
         $builder
             ->add('username', TextType::class, [
                 'constraints' => [
-                    new Length(['min' => 2, 'max' => 6],
+                    new Length(['min' => 2, 'max' => 16],
                         minMessage: "vous n'utilisez pas assez de caractère",
                         maxMessage: "vous utilisez trop de caractères")
                 ]
             ])
             ->add('email', EmailType::class)
             ->add('password', PasswordType::class)
+            ->add('role', ChoiceType::class, [
+                'mapped' => false,
+                'placeholder' => 'choose an option',
+                'choices' => [
+                    'Aucun' => null,
+                    'Admin' => 'ROLE_ADMIN',
+
+                ]
+            ])
             ->add('submit', SubmitType::class)
         ;
     }
