@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -81,18 +82,45 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function edit(
+        Request                                                            $request,
+        Product                                                            $product,
+        EntityManagerInterface                                             $entityManager,
+        #[Autowire('%kernel.project_dir%/public/uploads/pictures')] string $imagesDirectory
+    ): Response
     {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                // remove old image
+                if ($product->getPictureFilename()) {
+                    $oldImagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/pictures/' . $product->getPictureFilename();
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $newFilename = uniqid('pictures_', true) . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move($imagesDirectory, $newFilename);
+                } catch (FileException $e) {
+                    throw new Exception($e->getMessage());
+                }
+
+                $product->setPictureFilename($newFilename);
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('product/edit.html.twig', [
+        return $this->render('admin/product/edit.html.twig', [
             'product' => $product,
             'form' => $form,
         ]);
@@ -102,6 +130,12 @@ final class ProductController extends AbstractController
     public function delete(Request $request, Product $product, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->getPayload()->getString('_token'))) {
+            if ($product->getPictureFilename()) {
+                $oldImagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/pictures/' . $product->getPictureFilename();
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
             $entityManager->remove($product);
             $entityManager->flush();
         }

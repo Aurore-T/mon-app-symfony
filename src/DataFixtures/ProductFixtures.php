@@ -18,6 +18,15 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
         $faker = Faker\Factory::create('fr_FR');
         $faker->addProvider(new FakerPicsumImagesProvider($faker));
 
+        $destDir = dirname(__DIR__) . '/../public/uploads/pictures/';
+
+        if (!is_dir($destDir)) {
+            mkdir($destDir, 0775, true);
+        } else {
+            exec('rm -rf ' . $destDir);
+            mkdir($destDir, 0775, true);
+        }
+
 
         for ($i = 0; $i < 10; $i++) {
             $product = new Product();
