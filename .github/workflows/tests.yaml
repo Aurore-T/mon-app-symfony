@@ -1,0 +1,56 @@
+name: Tests
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    phpunit:
+        runs-on: ubuntu-latest
+
+        services:
+            mysql:
+                image: mysql:8.0
+                env:
+                    MYSQL_DATABASE: app_test
+                    MYSQL_USER: app
+                    MYSQL_PASSWORD: app
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+
+        env:
+            APP_ENV: test
+            DATABASE_URL: "mysql://app:app@127.0.0.1:3306/app?serverVersion=8.0"
+            # Optionnel : rend les logs plus lisibles en CI
+            SYMFONY_DEPRECATIONS_HELPER: "weak"
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  tools: composer
+                  extensions: mbstring, intl, pdo_mysql
+                  coverage: none
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-interaction --no-progress
+
+            - name: Prepare database (migrations + fixtures)
+              run: |
+                  php bin/console doctrine:database:drop --if-exists --force --env=test
+                  php bin/console doctrine:database:create --env=test
+                  php bin/console doctrine:migrations:migrate --no-interaction --env=test
+                  php bin/console doctrine:fixtures:load --no-interaction --env=test
+
+            - name: Run PHPUnit
+              run: vendor/bin/phpunit
