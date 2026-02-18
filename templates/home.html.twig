@@ -3,15 +3,17 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <h1>Vous êtes sur la page Home</h1>
+    <h1>Vous etes sur la page Home</h1>
 
     <section>
-        <h2>Les derniers produits</h2>
+        <h2>Les derniers produits à -50%</h2>
 
-        <div class="d-flex gap-5">
+        <div class="d-flex flex-wrap gap-5">
             {% for product in products %}
-            {{ include('partials/_card.html.twig', {'product': product}) }}
+                {{ include('partials/_card.html.twig', {'product': product}) }}
             {% endfor %}
         </div>
     </section>
+
 {% endblock %}
+

@@ -1,24 +1,26 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Navbar</a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
-                </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="/admin/product">Product</a>
+                    <a class="nav-link active" aria-current="page" href="{{ path('app_home') }}">Home</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/user">User</a>
-                </li>
+                {% if app.user %}
+                    {% set role = app.user.roles|find(role => role == 'ROLE_ADMIN') %}
+
+                    {% if role %}
+                        <li class="nav-item">
+                            <a class="btn btn-danger" href="{{ path('app_admin_dashboard') }}">Espace admin</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
 
             </ul>
 
@@ -26,7 +28,8 @@
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
-        </div>
 
+        </div>
     </div>
 </nav>
+
