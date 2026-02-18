@@ -1,0 +1,60 @@
+{% set routeParams = app.request.query.all|merge() %}
+{% set currentPage = app.request.query.get('page', 1) %}
+{% set size = app.request.query.get('size', 10) %}
+{% set countPage = (count / size)|round(0, 'ceil') %}
+
+{% if countPage > 1 %}
+    <div class="pagination">
+        <nav aria-label="pagination">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link {% if currentPage == 1 %}disabled{% endif %}"
+                       href="{{ path(app.request.attributes.get('_route'), routeParams|merge({'page': 1})) }}">
+                        «
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link {% if currentPage == 1 %}disabled{% endif %}"
+                       href="{{ path(app.request.attributes.get('_route'), routeParams|merge({'page': currentPage - 1})) }}">
+                        Précédent
+                    </a>
+                </li>
+                {% if currentPage > 3 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{{ path(app.request.attributes.get('_route'), routeParams|merge({'page': 1})) }}">1</a>
+                    </li>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                {% endif %}
+                {% for i in (currentPage - 2 > 1 ? currentPage - 2 : 1)..(currentPage + 2 < countPage ? currentPage + 2 : countPage) %}
+                    <li class="page-item {% if i == currentPage %}active{% endif %}">
+                        <a class="page-link"
+                           href="{{ path(app.request.attributes.get('_route'), routeParams|merge({'page': i})) }}">
+                            {{ i }}
+                        </a>
+                    </li>
+                {% endfor %}
+                {% if currentPage < countPage - 2 %}
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{{ path(app.request.attributes.get('_route'), routeParams|merge({'page': countPage})) }}">{{ countPage }}</a>
+                    </li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link {% if currentPage == countPage %}disabled{% endif %}"
+                       href="{{ path(app.request.attributes.get('_route'), routeParams|merge({'page': currentPage + 1})) }}">
+                        Suivant
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link {% if currentPage == countPage %}disabled{% endif %}"
+                       href="{{ path(app.request.attributes.get('_route'), routeParams|merge({'page': countPage})) }}">
+                        »
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endif %}
+

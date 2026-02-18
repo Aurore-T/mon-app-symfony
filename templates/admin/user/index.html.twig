@@ -1,11 +1,13 @@
 {% extends 'admin/base-admin.html.twig' %}
 
 {% block title %}
-    {{ title }}
+    User index
 {% endblock %}
 
 {% block body %}
-    <h1>{{ title }}</h1>
+    <h1>User index</h1>
+
+    {{ include ('partials/_pagination.html.twig') }}
 
     <table class="table">
         <thead>

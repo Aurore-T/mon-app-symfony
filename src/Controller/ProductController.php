@@ -19,10 +19,16 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ProductController extends AbstractController
 {
     #[Route(name: 'app_product_index', methods: ['GET'])]
-    public function index(ProductRepository $productRepository): Response
+    public function index(Request $request, ProductRepository $productRepository): Response
     {
+        $size = isset($request->query->all()['size']) ? (int)$request->query->get('size') : 10;
+        $page = isset($request->query->all()['page']) ? (int)$request->query->get('page') : 1;
+
+        $data = $productRepository->findPaginate($size, $page);
+
         return $this->render('admin/product/index.html.twig', [
-            'products' => $productRepository->findAll(),
+            'products' => $data['products'],
+            'count' => $data['count'],
         ]);
     }
 

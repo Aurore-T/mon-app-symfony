@@ -40,4 +40,26 @@ class CategoryRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findPaginate(int $size, int $page): array
+    {
+        $offset = ($page - 1) * $size;
+
+        $count = $this->createQueryBuilder('c')
+            ->select('COUNT(c)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+
+        $categories = $this->createQueryBuilder('c')
+            ->orderBy('c.createdAt', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($size)
+            ->getQuery()
+            ->getResult();
+
+        return [
+            'categories' => $categories,
+            'count' => $count
+        ];
+    }
 }

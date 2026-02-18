@@ -20,13 +20,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(Request $request, UserRepository $userRepository): Response
     {
-        $users = $userRepository->findAll();
+        $size = isset($request->query->all()['size']) ? (int)$request->query->get('size') : 10;
+        $page = isset($request->query->all()['page']) ? (int)$request->query->get('page') : 1;
+
+        $data = $userRepository->findPaginate($size, $page);
 
         return $this->render('admin/user/index.html.twig', [
-            'title' => "Jo d'hiver 2026",
-            'users' => $users,
+            'users' => $data['users'],
+            'count' => $data['count'],
         ]);
     }
 

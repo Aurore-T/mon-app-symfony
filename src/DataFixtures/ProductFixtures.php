@@ -28,7 +28,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
         }
 
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $product = new Product();
 
             $filePath= $faker->image(dir: '/tmp', width: 640, height: 480);
