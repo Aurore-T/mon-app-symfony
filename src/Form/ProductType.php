@@ -21,6 +21,7 @@ class ProductType extends AbstractType
             ->add('price')
             ->add('category', EntityType::class, [
                 'class' => Category::class,
+                'choice_value' => 'title',
                 'choice_label' => 'title',
             ])
             ->add('picture', FileType::class, [
