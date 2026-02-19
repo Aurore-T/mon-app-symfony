@@ -4,11 +4,22 @@ namespace App\Tests\Controller;
 
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 
 class ProductControllerTest extends WebTestCase
 {
     private static ?int $id = null;
+
+    public function testIndex(): void
+    {
+        $client = self::createClient();
+        $user = new InMemoryUser('admin', 'password', ['ROLE_ADMIN']);
+        $client->loginUser($user);
+
+        $client->request('GET', '/admin/product');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
 
     public function testNewProduct(): void
     {
