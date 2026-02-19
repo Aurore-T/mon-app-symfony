@@ -2,11 +2,14 @@
 
 namespace App\Tests\Controller;
 
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 
 class ProductControllerTest extends WebTestCase
 {
+    private static ?int $id = null;
+
     public function testNewProduct(): void
     {
         $client = static::createClient();
@@ -25,6 +28,31 @@ class ProductControllerTest extends WebTestCase
 
         $client->submit($form);
 
+        $container = self::getContainer();
+        $product = $container->get(ProductRepository::class)->findOneBy(['title' => 'Titre test']);
+        self::$id = $product->getId();
+
         $this->assertResponseRedirects('/admin/product');
+    }
+
+    public function testEditProduct(): void
+    {
+        $client = static::createClient();
+        $admin = new InMemoryUser('admin', 'password', ['ROLE_ADMIN']);
+        $client->loginUser($admin);
+
+        $crawler = $client->request('GET', '/admin/product/' . self::$id . '/edit');
+        $buttonCrawlerNode = $crawler->selectButton('Update');
+
+        $form = $buttonCrawlerNode->form();
+        $form['product[title]'] = 'Change product title';
+        $form['product[description]'] = 'Voici ma description';
+        $form['product[price]'] = 100;
+        $form['product[category]']->select('Chaussure');
+
+        $client->submit($form);
+
+        $this->assertResponseRedirects('/admin/product');
+
     }
 }

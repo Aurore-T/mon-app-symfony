@@ -45,30 +45,25 @@ final class ProductController extends AbstractController
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $pictureFile = $form->get('picture')->getData();
 
+            if ($pictureFile) {
+                $originalFilename = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $pictureFile->guessExtension();
 
-            if ($form->isSubmitted() && $form->isValid()) {
-                $pictureFile = $form->get('picture')->getData();
-
-                if ($pictureFile) {
-                    $originalFilename = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
-                    $safeFilename = $slugger->slug($originalFilename);
-                    $newFilename = $safeFilename . '-' . uniqid() . '.' . $pictureFile->guessExtension();
-
-                    try {
-                        $pictureFile->move($picturesDirectory, $newFilename);
-                    } catch (FileException $e) {
-                    }
-
-                    $product->setPictureFilename($newFilename);
+                try {
+                    $pictureFile->move($picturesDirectory, $newFilename);
+                } catch (FileException $e) {
                 }
 
-                $entityManager->persist($product);
-                $entityManager->flush();
-
-                return $this->redirectToRoute('app_product_index');
+                $product->setPictureFilename($newFilename);
             }
+
+            $entityManager->persist($product);
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -99,7 +94,7 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $imageFile = $form->get('image')->getData();
+            $imageFile = $form->get('picture')->getData();
 
             if ($imageFile) {
                 // remove old image
